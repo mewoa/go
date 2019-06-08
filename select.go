@@ -22,8 +22,12 @@ func main() {
 	time.Sleep(1 * time.Second)
 	select {
 	// 无缓冲的通道，只有发送和接收同时准备好才能进行通信
+	// 所有的表达式按照从左到右， 从上到下的顺序求值
+	// 若多个case都可以执行操作，Go会随机选择一个
 	case ch1 <- 1:
 		fmt.Println("case 0 is selected")
+	case getChan(1) <- getNumber(3):
+		fmt.Println("case 1 is selected")
 	default:
 		fmt.Println("defalut is selected")
 	}
