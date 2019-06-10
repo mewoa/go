@@ -13,6 +13,7 @@ func (m *MyHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request)
 }
 
 func main() {
+	fmt.Println("i am a new branch called hotfix, i am here to merge to branch master")
 	handler := MyHandler{}
 	server := http.Server{
 		Addr:    "127.0.0.1:8080",
