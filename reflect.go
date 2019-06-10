@@ -53,29 +53,33 @@ type employee struct {
 func createQuery(q interface{}) {
 
 	// 调用kind后可以直接与reflect中定义的const值来比较
-	if reflect.ValueOf(q).Kind() == reflect.Struct {
+	// TypeOf用来对类型进行操作，主要有Name() 和 Kind()方法
+	// StructField类型包含一个Type指针用来描述这个字段
+	if reflect.TypeOf(q).Kind() == reflect.Struct {
 
 		// TypeOf返回的是接口，要想获取名字的字符串形式，使用Name()函数
 		t := reflect.TypeOf(q).Name()
 		query := fmt.Sprintf("insert into %s values(", t)
 
-		// NumField和Field是通过reflect.Value类型调用
-		v := reflect.ValueOf(q)
+		// NumField和Field是通过reflect.Value或reflect.TypeOf类型调用,
+		// 二者Field返回类型不同，第一个返回Value类型，第二个返回StructField描述这个字段
+		v := reflect.TypeOf(q)
+
 		for i := 0; i < v.NumField(); i++ {
 
 			//Field()返回的是reflec.Value
-			switch v.Field(i).Kind() {
+			switch v.Field(i).Type.Kind() {
 			case reflect.Int:
 				if i == 0 {
-					query = fmt.Sprintf("%s%d", query, v.Field(i).Int())
+					query = fmt.Sprintf("%s%d", query, reflect.ValueOf(q).Field(i).Int())
 				} else {
-					query = fmt.Sprintf("%s, %d", query, v.Field(i).Int())
+					query = fmt.Sprintf("%s, %d", query, reflect.ValueOf(q).Field(i).Int())
 				}
 			case reflect.String:
 				if i == 0 {
-					query = fmt.Sprintf("%s\"%s\"", query, v.Field(i).String())
+					query = fmt.Sprintf("%s\"%s\"", query, reflect.ValueOf(q).Field(i).String())
 				} else {
-					query = fmt.Sprintf("%s, \"%s\"", query, v.Field(i).String())
+					query = fmt.Sprintf("%s, \"%s\"", query, reflect.ValueOf(q).Field(i).String())
 				}
 			default:
 				fmt.Println("Unsupported type")
